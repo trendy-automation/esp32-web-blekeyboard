@@ -39,6 +39,7 @@ These arrays map Cyrillic letters to their corresponding Latin keyboard keys bas
 ### Prerequisites
 
 1. **Hardware**: An Arduino-compatible board with BLE support (e.g., ESP32).
+   - Ensure that your ESP32 device is connected to a reliable Wi-Fi network for additional functionality if needed.
 2. **Libraries**: Install the `BleKeyboard` library for Arduino. [ESP32-BLE-Keyboard GitHub Repository](https://github.com/T-vK/ESP32-BLE-Keyboard).
 
 ### How to Use
@@ -48,9 +49,10 @@ These arrays map Cyrillic letters to their corresponding Latin keyboard keys bas
    git clone https://github.com/yourusername/utf8-keyboard-emulator.git
    ```
 2. Open the project in Arduino IDE.
-3. Upload the sketch to your Arduino-compatible board.
-4. Send UTF-8 encoded strings to the emulator via Serial Monitor or any input device.
-5. Observe the automatic layout switching and keystroke output.
+3. Before uploading the sketch, update the `wifiNetworks` array in the code to include your Wi-Fi network credentials.
+4. Upload the sketch to your Arduino-compatible board.
+5. Send UTF-8 encoded strings to the emulator via Serial Monitor or any input device.
+6. Observe the automatic layout switching and keystroke output.
 
 ### Example Input
 
