@@ -64,16 +64,3 @@ These arrays map Cyrillic letters to their corresponding Latin keyboard keys bas
 
 - Automatically switches layouts as needed.
 - Sends the corresponding keystrokes to the connected device.
-
-## Contributing
-
-Contributions are welcome! Feel free to submit issues, feature requests, or pull requests to improve the project.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
-## Acknowledgments
-
-- Inspired by the need to handle multilingual keyboard input seamlessly.
-- Built using the `BleKeyboard` library for Arduino.
