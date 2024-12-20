@@ -39,7 +39,7 @@ These arrays map Cyrillic letters to their corresponding Latin keyboard keys bas
 ### Prerequisites
 
 1. **Hardware**: An Arduino-compatible board with BLE support (e.g., ESP32).
-2. **Libraries**: Install the `BleKeyboard` library for Arduino.
+2. **Libraries**: Install the `BleKeyboard` library for Arduino. [ESP32-BLE-Keyboard GitHub Repository](https://github.com/T-vK/ESP32-BLE-Keyboard).
 
 ### How to Use
 
@@ -75,6 +75,3 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 - Inspired by the need to handle multilingual keyboard input seamlessly.
 - Built using the `BleKeyboard` library for Arduino.
-
----
-h web server on EPS32-S3-Dev kit
