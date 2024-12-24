@@ -9,6 +9,7 @@ BleKeyboard bleKeyboard("ESP32KB");
 const char* wifiNetworks[][2] = {
     {"ssid", "pass"}
 };
+
 const int wifiNetworkCount = sizeof(wifiNetworks) / sizeof(wifiNetworks[0]);
 
 // Создаем веб-сервер на порту 80
@@ -18,6 +19,7 @@ WebServer server(80);
 #define DELAY_BETWEEN_LINES 100 // Задержка между отправкой строк в миллисекундах
 // Флаг для предотвращения повторной отправки
 bool textSent = false;
+bool welcomeMsg = false;
 int signalLevel = 0;
 bool isRussian = false; // Текущая раскладка: false - латиница, true - русская
 
@@ -322,9 +324,8 @@ void handleTextRequest() {
                     // Отправляем строку символ за символом
                     
                     processUTF8Line(line);
-                    
+                  
                     // Отправляем Enter после строки
-                    bleKeyboard.write(KEY_RETURN);
                     Serial.println("Sent line: " + line);
 
                     // Задержка между строками
@@ -332,6 +333,7 @@ void handleTextRequest() {
 
                     // Переход к следующей строке
                     if (endIndex == -1) break;
+                      else bleKeyboard.write(KEY_RETURN);
                     startIndex = endIndex + 1;
                     endIndex = receivedText.indexOf('\n', startIndex);
                 }
@@ -403,5 +405,25 @@ void setup() {
 }
 
 void loop() {
-    server.handleClient();
+    static unsigned long lastClientCheck = 0;
+    const unsigned long clientCheckInterval = 100; // Интервал проверки клиентов (мс)
+    
+    // Обработка запросов веб-сервера
+    if (millis() - lastClientCheck > clientCheckInterval) {
+        lastClientCheck = millis();
+        server.handleClient();
+    }
+
+    // Разовая отправка приветственного сообщения
+    if (!welcomeMsg && WiFi.status() == WL_CONNECTED && bleKeyboard.isConnected()) {
+        sendWelcomeMessage();
+        welcomeMsg = true; // Устанавливаем флаг, чтобы сообщение не отправлялось повторно
+    }
+}
+
+void sendWelcomeMessage() {
+    String ipAddress = WiFi.localIP().toString();
+    String message = "IP Address BLE ESP32 Keyboard: http://" + ipAddress;
+    processUTF8Line(message);
+    Serial.println("Welcome message sent via BLE.");
 }
