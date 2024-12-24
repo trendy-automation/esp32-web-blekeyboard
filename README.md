@@ -1,4 +1,4 @@
-# UTF-8 Keyboard Emulator with Layout Switching
+# UTF-8 Keyboard Emulator
 
 This project implements a UTF-8 keyboard emulator for Arduino-based systems. It features dynamic layout switching between Russian and Latin layouts depending on the input characters. At the end of the input, the keyboard always returns to the default Latin layout. 
 
