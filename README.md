@@ -2,7 +2,9 @@
 
 This project implements a UTF-8 keyboard emulator for Arduino-based systems. It features dynamic layout switching between Russian and Latin layouts depending on the input characters. At the end of the input, the keyboard always returns to the default Latin layout. 
 
-After turning on the microcontroller, it connects to the first available Wi-Fi network, which are programmed in the code. The controller sends an IP address to the port monitor, on which a web server with a window for entering text is launched. After connecting the controller as a Bluetooth keyboard, sending text entered in the web interface is available. The intended use is to transfer text to systems where other methods of transfer are not available (files, clipboard, etc.)
+After turning on the microcontroller, it connects to the first available Wi-Fi network, which are programmed in the code. The controller sends an IP address to the port monitor, on which a web server with a window for entering text is launched. After connecting the controller as a Bluetooth keyboard, sending text entered in the web interface is available. The intended use is to transfer text to systems where other methods of transfer are not available (files, clipboard, etc.) 
+
+When both the keyboard and WiFi are connected for the first time since booting, a welcome message containing the IP address of the web server is displayed via the keyboard.
 
 ## Features
 
