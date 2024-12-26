@@ -9,7 +9,6 @@ BleKeyboard bleKeyboard("ESP32KB");
 const char* wifiNetworks[][2] = {
     {"ssid", "pass"}
 };
-
 const int wifiNetworkCount = sizeof(wifiNetworks) / sizeof(wifiNetworks[0]);
 
 // Создаем веб-сервер на порту 80
@@ -208,27 +207,26 @@ const char* htmlPage = R"rawliteral(
 
 void processUTF8Line(const String& line) {
     int startIndex = 0;
-    
-
     // Проверяем наличие BOM в начале строки
-    if (line.length() >= 3 &&
-        static_cast<uint8_t>(line.charAt(0)) == 0xEF &&
-        static_cast<uint8_t>(line.charAt(1)) == 0xBB &&
-        static_cast<uint8_t>(line.charAt(2)) == 0xBF) {
-        startIndex = 3; // Пропускаем BOM
-    }
+    //if (line.length() >= 3 &&
+    //    static_cast<uint8_t>(line.charAt(0)) == 0xEF &&
+    //    static_cast<uint8_t>(line.charAt(1)) == 0xBB &&
+    //    static_cast<uint8_t>(line.charAt(2)) == 0xBF) {
+    //    startIndex = 3; // Пропускаем BOM
+    //}
 
     for (int i = startIndex; i < line.length(); i++) {
-        uint8_t byte1 = static_cast<uint8_t>(line.charAt(i));
-
+        uint8_t byte1 = static_cast<uint8_t>(line.charAt(i));                
 		// Проверка начала двухбайтового символа UTF-8
-        if (byte1 == 0xD0 || byte1 == 0xD1) { // Русский символ
+        if (byte1 == 0xD0 || byte1 == 0xD1 || byte1 == 0xE2)  { // Русский символ
             if (!isRussian) {
                 switchLayout(true);
                 isRussian = true;
             }
             if (i + 1 < line.length()) {
                 uint8_t byte2 = static_cast<uint8_t>(line.charAt(i + 1));
+                //Serial.print("Index + 1 = ");
+                //Serial.println(i+1);
                 uint16_t utf8Char = (byte1 << 8) | byte2;
                 if (i == startIndex) {
                   Serial.print("UTF-8 Char ");
@@ -268,7 +266,7 @@ void sendChar(uint16_t c) {
     // Таблицы соответствия UTF-8 символов
     static const char russianToEnglishUpper[] = {
         'F', '<', 'D', 'U', 'L', 'T',  ':', 'P', 'B', 'Q', 'R', 'K', 'V', 'Y',
-        'J', 'G', 'H', 'C', 'N', 'E', 'A', '[', 'W', 'X', 'I', 'O', ']', 'S', 'M',
+        'J', 'G', 'H', 'C', 'N', 'E', 'A', '{', 'W', 'X', 'I', 'O', '}', 'S', 'M',
         '"', '>', 'Z','?','~' // Заглавные буквы А-Я
     };
     static const char russianToEnglishLower[] = {
@@ -285,7 +283,7 @@ void sendChar(uint16_t c) {
     } else if (c == 0xD081) {
         uint8_t index = c - 0xD080 + 32; // Вычисляем индекс
         bleKeyboard.write(russianToEnglishUpper[index]);
-    } 
+    }
     // Строчные буквы (а - п)
     else if (c >= 0xD0B0 && c <= 0xD0BF) {
         uint8_t index = c - 0xD0B0; // Вычисляем индекс
@@ -295,7 +293,14 @@ void sendChar(uint16_t c) {
     else if (c >= 0xD180 && c <= 0xD191) {
         uint8_t index = c - 0xD180 + 16; // Вычисляем индекс
         bleKeyboard.write(russianToEnglishLower[index]);
-    } else {
+    }
+    else if (c == 0xE284) { // Символ № (226 / 57988)
+        bleKeyboard.write(0x23);  // Соответствие на латинице
+    } else if (c == 0x96) { // Символ № (150 )
+        //bleKeyboard.write(0x23);  // Соответствие на латинице
+        Serial.println("0x96");
+    }
+    else {      
         // ASCII символы
         bleKeyboard.write(static_cast<char>(c));
     }
@@ -381,6 +386,10 @@ void setup() {
     Serial.begin(115200);
     Serial.println();
 
+    BLEDevice::setEncryptionLevel(ESP_BLE_SEC_ENCRYPT_MITM);
+    bleKeyboard.begin();
+    Serial.println("BLE Keyboard started.");
+
     // Подключение к Wi-Fi
     if (!connectToWiFi()) {
         Serial.println("Starting as an Access Point...");
@@ -389,9 +398,6 @@ void setup() {
         Serial.println(WiFi.softAPIP());
     }
 
-    BLEDevice::setEncryptionLevel(ESP_BLE_SEC_ENCRYPT_MITM);
-    bleKeyboard.begin();
-    Serial.println("BLE Keyboard started.");
 
     // Настраиваем обработчики для запросов
     server.on("/", HTTP_GET, []() { server.send(200, "text/html", htmlPage); });
